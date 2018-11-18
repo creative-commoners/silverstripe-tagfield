@@ -74,7 +74,9 @@ describe('TagField', () => {
     });
 
     it('should fetch the URL for results', () => {
+      jest.useFakeTimers();
       wrapper.instance().getOptions('a');
+      jest.runAllTimers();
       expect(fetch).toBeCalledWith('localhost/some-fetch-url?term=a', expect.anything());
     });
   });
