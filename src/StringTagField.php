@@ -59,6 +59,12 @@ class StringTagField extends DropdownField
     protected $isMultiple = true;
 
     /**
+     * @skipUpgrade
+     * @var string
+     */
+    protected $schemaComponent = 'TagField';
+
+    /**
      * @return bool
      */
     public function getShouldLazyLoad()
@@ -149,9 +155,7 @@ class StringTagField extends DropdownField
 
         $this->addExtraClass('ss-tag-field');
 
-        return $this
-            ->customise($properties)
-            ->renderWith(TagField::class);
+        return $this->customise($properties)->renderWith(TagField::class);
     }
 
     /**
@@ -348,5 +352,10 @@ class StringTagField extends DropdownField
         $this->canCreate = $canCreate;
 
         return $this;
+    }
+
+    public function FieldHolder($properties = [])
+    {
+        return $this->customise($properties)->renderWith(TagField::class . '_holder');
     }
 }

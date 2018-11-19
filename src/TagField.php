@@ -7,6 +7,7 @@ use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\FormField;
 use SilverStripe\Forms\Validator;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataList;
@@ -60,6 +61,14 @@ class TagField extends DropdownField
      * @var bool
      */
     protected $isMultiple = true;
+
+    /**
+     * @skipUpgrade
+     * @var string
+     */
+    protected $schemaComponent = 'TagField';
+
+    protected $schemaDataType = FormField::SCHEMA_DATA_TYPE_MULTISELECT;
 
     /**
      * @param string $name
@@ -251,6 +260,14 @@ class TagField extends DropdownField
         $attributes['data-schema'] = json_encode($this->getSchemaData());
         return $attributes;
     }
+
+//    public function getSchemaStateDefaults()
+//    {
+//        return array_merge(
+//            parent::getSchemaStateDefaults(),
+//            ['name' => $this->getName() . '[]']
+//        );
+//    }
 
     /**
      * @return string

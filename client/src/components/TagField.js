@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import Select from 'react-select';
 import fetch from 'isomorphic-fetch';
+import fieldHolder from 'components/FieldHolder/FieldHolder';
 import url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import debounce from 'lodash/debounce';
@@ -112,4 +113,6 @@ TagField.defaultProps = {
   disabled: false
 };
 
-export default TagField;
+export { TagField as Component };
+
+export default fieldHolder(TagField);
