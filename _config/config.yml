@@ -1,3 +1,6 @@
+---
+Name: tagfieldconfig
+---
 SilverStripe\Admin\LeftAndMain:
   extra_requirements_css:
     - 'silverstripe/tagfield:client/dist/styles/bundle.css'

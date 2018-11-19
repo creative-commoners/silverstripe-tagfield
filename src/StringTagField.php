@@ -168,12 +168,13 @@ class StringTagField extends DropdownField
         $schema = array_merge(
             parent::getSchemaDataDefaults(),
             [
-                'name' => $this->getName() . '[]',
                 'lazyLoad' => $this->getShouldLazyLoad(),
                 'creatable' => $this->getCanCreate(),
                 'multi' => $this->getIsMultiple(),
-                'value' => $this->formatOptions($this->Value()),
                 'disabled' => $this->isDisabled() || $this->isReadonly(),
+                // Note: value and name are only required for entwine initiated fields
+                'value' => $this->formatOptions($this->Value()),
+                'name' => $this->getName() . '[]',
             ]
         );
 
@@ -184,6 +185,24 @@ class StringTagField extends DropdownField
         }
 
         return $schema;
+    }
+
+    public function getAttributes()
+    {
+        $attributes = parent::getAttributes();
+        $attributes['data-schema'] = json_encode($this->getSchemaData());
+        $attributes['name'] = $this->getName() . '[]';
+        return $attributes;
+    }
+
+    public function getSchemaStateDefaults()
+    {
+        return array_merge(
+            parent::getSchemaStateDefaults(),
+            [
+                'value' => $this->formatOptions($this->Value()),
+            ]
+        );
     }
 
     protected function formatOptions($fieldValue)
@@ -200,19 +219,6 @@ class StringTagField extends DropdownField
             ];
         }
         return $formattedValue;
-    }
-
-    /**
-     * When not used in a React form factory context, this adds the schema data to SilverStripe template
-     * rendered attributes lists
-     *
-     * @return array
-     */
-    public function getAttributes()
-    {
-        $attributes = parent::getAttributes();
-        $attributes['data-schema'] = json_encode($this->getSchemaData());
-        return $attributes;
     }
 
     /**
@@ -276,7 +282,13 @@ class StringTagField extends DropdownField
 
         $name = $this->getName();
 
-        $record->$name = implode(',', $this->Value());
+        $value = $this->Value();
+        if (!empty($value) && is_array(reset($value))) {
+            // Input is nested, normalise it
+            $value = array_column($value, 'Value');
+        }
+
+        $record->$name = implode(',', $value);
         $record->write();
     }
 

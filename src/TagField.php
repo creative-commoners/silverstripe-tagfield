@@ -8,6 +8,7 @@ use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FormField;
+use SilverStripe\Forms\MultiSelectField;
 use SilverStripe\Forms\Validator;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataList;
@@ -23,7 +24,7 @@ use SilverStripe\View\Requirements;
  * @package forms
  * @subpackage fields
  */
-class TagField extends DropdownField
+class TagField extends MultiSelectField
 {
     /**
      * @var array
@@ -68,7 +69,7 @@ class TagField extends DropdownField
      */
     protected $schemaComponent = 'TagField';
 
-    protected $schemaDataType = FormField::SCHEMA_DATA_TYPE_MULTISELECT;
+//    protected $schemaDataType = FormField::SCHEMA_DATA_TYPE_MULTISELECT;
 
     /**
      * @param string $name
@@ -227,12 +228,13 @@ class TagField extends DropdownField
         $schema = array_merge(
             parent::getSchemaDataDefaults(),
             [
-                'name' => $this->getName() . '[]',
                 'lazyLoad' => $this->getShouldLazyLoad(),
                 'creatable' => $this->getCanCreate(),
                 'multi' => $this->getIsMultiple(),
-                'value' => $this->Value(),
                 'disabled' => $this->isDisabled() || $this->isReadonly(),
+                // Note: value and name are only required for entwine initiated fields
+//                'value' => $this->Value(),
+//                'name' => $this->getName() . '[]',
             ]
         );
 
@@ -248,26 +250,31 @@ class TagField extends DropdownField
         return $schema;
     }
 
-    /**
-     * When not used in a React form factory context, this adds the schema data to SilverStripe template
-     * rendered attributes lists
-     *
-     * @return array
-     */
     public function getAttributes()
     {
-        $attributes = parent::getAttributes();
-        $attributes['data-schema'] = json_encode($this->getSchemaData());
-        return $attributes;
+        return array_merge(
+            parent::getAttributes(),
+            [
+                'data-schema' => json_encode($this->getSchemaData()),
+                'name' => $this->getName() . '[]',
+            ]
+        );
     }
 
-//    public function getSchemaStateDefaults()
-//    {
-//        return array_merge(
-//            parent::getSchemaStateDefaults(),
-//            ['name' => $this->getName() . '[]']
-//        );
-//    }
+    public function getSchemaStateDefaults()
+    {
+        $value = $this->Value();
+        if ($this->getShouldLazyLoad() && $this->Value()) {
+            $value = $this->getOptions(true)->toNestedArray();
+        }
+
+        return array_merge(
+            parent::getSchemaStateDefaults(),
+            [
+                'value' => $value,
+            ]
+        );
+    }
 
     /**
      * @return string
@@ -348,9 +355,6 @@ class TagField extends DropdownField
         return parent::setValue(array_filter($value));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function saveInto(DataObjectInterface $record)
     {
         parent::saveInto($record);
@@ -375,6 +379,10 @@ class TagField extends DropdownField
         }
 
         foreach ($values as $key => $value) {
+            if (is_array($value)) {
+                $value = $value['Value'];
+            }
+
             // Get or create record
             $record = $this->getOrCreateTag($value);
             if ($record) {

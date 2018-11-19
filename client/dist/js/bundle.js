@@ -189,6 +189,7 @@ var TagField = function (_Component) {
     };
 
     _this.onChange = _this.onChange.bind(_this);
+    _this.onBlur = _this.onBlur.bind(_this);
     _this.getOptions = _this.getOptions.bind(_this);
     _this.fetchOptions = (0, _debounce2.default)(_this.fetchOptions, 500);
     return _this;
@@ -205,6 +206,9 @@ var TagField = function (_Component) {
         this.props.onChange(value);
       }
     }
+  }, {
+    key: 'onBlur',
+    value: function onBlur(event) {}
   }, {
     key: 'getOptions',
     value: function getOptions(input) {
@@ -270,6 +274,7 @@ var TagField = function (_Component) {
 
       return _react2.default.createElement(SelectComponent, _extends({}, passThroughAttributes, {
         onChange: this.onChange,
+        onBlur: this.onBlur,
         inputProps: { className: 'no-change-track' }
       }, optionAttributes));
     }

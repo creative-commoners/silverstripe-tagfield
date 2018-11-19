@@ -15,6 +15,7 @@ class TagField extends Component {
     };
 
     this.onChange = this.onChange.bind(this);
+    this.onBlur = this.onBlur.bind(this);
     this.getOptions = this.getOptions.bind(this);
     this.fetchOptions = debounce(this.fetchOptions, 500);
   }
@@ -27,6 +28,10 @@ class TagField extends Component {
     if (typeof this.props.onChange === 'function') {
       this.props.onChange(value);
     }
+  }
+
+  onBlur(event) {
+
   }
 
   getOptions(input) {
@@ -85,6 +90,7 @@ class TagField extends Component {
       <SelectComponent
         {...passThroughAttributes}
         onChange={this.onChange}
+        onBlur={this.onBlur}
         inputProps={{ className: 'no-change-track' }}
         {...optionAttributes}
       />
